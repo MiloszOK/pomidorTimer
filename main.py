@@ -5,10 +5,33 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
+rep = 0
+timer = 'None'
 
+def resetTimer():
+    window.after_cancel(timer)
+    canvas.itemconfig(timerText, text='00:00')
+    tytul.config(text='Pomidorowy Timer')
+    global rep
+    rep = 0
 
 def startTimer():
-    countDown(5*60)
+    global rep
+    rep += 1
+
+    workSec = 25*60
+    shortBreak = 5*60
+    longBreak = 20*60
+
+    if rep % 8 == 0:
+        countDown(longBreak)
+        tytul.config(text='Przerwa', fg=RED)
+    elif rep % 2 == 0:
+        countDown(shortBreak)
+        tytul.config(text='Przerwa', fg=PINK)
+    else:
+        countDown(workSec)
+        tytul.config(text='Praca', fg=GREEN)
 
 def countDown(czas):
     countMin = math.floor(czas/60)
@@ -18,7 +41,10 @@ def countDown(czas):
 
     canvas.itemconfig(timerText, text=f"{countMin}:{countSec}")
     if czas > 0:
-        window.after(1000, countDown, czas - 1)
+        global timer
+        timer = window.after(1000, countDown, czas - 1)
+    else:
+        startTimer()
 
 window = Tk()
 window.title('Pomidor')
@@ -37,11 +63,8 @@ canvas.grid(row=1, column = 1)
 button1 = Button(text='START', command=startTimer)
 button1.grid(row = 2, column = 0)
 
-button2 = Button(text='RESET')
+button2 = Button(text='RESET', command=resetTimer)
 button2.grid(row = 2, column = 2)
-
-ptaszek = Label(text='✔', font=('Courier', 15, 'bold'), fg=GREEN, bg=YELLOW)
-ptaszek.grid(row = 3, column = 1)
 
 
 
